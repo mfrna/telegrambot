@@ -148,7 +148,7 @@ class Bot{
     
     public function getChat($chat_id)
     {
-        return new Type\Chat($this->APICall(['chat_id' => $chat_id]));
+        return new Type\Chat($this->APICall('getChat', ['chat_id' => $chat_id]));
     }
     
     public function getChatAdministrators()
