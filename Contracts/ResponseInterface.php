@@ -2,7 +2,7 @@
 namespace MFRNA\TelegramBot\Contracts;
 
 interface ResponseInterface{
-	public function handle($curl_response);
+    public function handle($curl_response);
 }
 
 ?>
