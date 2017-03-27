@@ -5,4 +5,4 @@ namespace MFRNA\TelegramBot\Exceptions;
 /**
 * 
 */
-class JSONException extends \Exception {}
+class JSONException extends \Exception { }

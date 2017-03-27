@@ -1,41 +1,49 @@
 <?php
 namespace MFRNA\TelegramBot\API;
 
-use MFRNA\TelegramBot\Excptions\HttpException;
-use MFRNA\TelegramBot\Excptions\JSONException;
+use MFRNA\TelegramBot\Exceptions\HttpException;
+use MFRNA\TelegramBot\Exceptions\APICallException;
 use MFRNA\TelegramBot\Contracts\ResponseInterface;
 use MFRNA\TelegramBot\Types;
 
 class Bot{
     
     protected $api_url = 'https://api.telegram.org/bot';
+    protected $token;
     private $response;
 
     const HTTP_CODE_OK = 200;
 
 
-    public function __construct(ResponseInterface $response)
+    public function __construct(ResponseInterface $response, $token)
     {
         $this->response = $response;
+        $this->token = $token;
     }
 
     /**
+     * Use this method to specify a url and receive incoming updates via an outgoing webhook.
+     * Whenever there is an update for the bot, Telegram will send an HTTPS POST request to the specified url,
+     * containing a JSON-serialized Update. In case of an unsuccessful request, Telegram will give up after a
+     * reasonable amount of attempts.
      * @param $url
      */
     public function setWebHook($url)
     {
-        $this->APICall('setWebHook',['url' => $url]);
+        return $this->APICall('setWebHook',['url' => $url]);
     }
 
     /**
+     * Main Gateway for API Communications
      * @param $method
      * @param array $params
+     * @throws APICallException
      * @return mixed
      */
-    public function APICall($method, array $params)
+    protected function APICall($method, array $params = [])
     {
         $options = array(
-            CURLOPT_URL => $this->api_url . '/' . $method,
+            CURLOPT_URL => $this->api_url . $this->token. '/' . $method,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => null,
             CURLOPT_POSTFIELDS => null
@@ -52,12 +60,12 @@ class Bot{
             curl_setopt_array($curlRes, $options);
             $result = curl_exec($curlRes);
 
-            if(($httpCode = curl_getinfo($curlRes, CURLINFO_HTTP_CODE)) && $httpCode !== HTTP_CODE_OK) {
+            if(($httpCode = curl_getinfo($curlRes, CURLINFO_HTTP_CODE)) && $httpCode !== self::HTTP_CODE_OK) {
                 throw new HttpException($httpCode);
             }
             
             $response = $this->response->handle($result);
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             throw new APICallException($e->getMessage(), $e->getCode(), $e);
         }
 
@@ -76,9 +84,18 @@ class Bot{
         return new Types\User($this->APICall('getMe'));
     }
 
-    public function sendMessage()
+    public function sendMessage($chat_id, $text, $parse_mode = null,$disable_web_page_preview = null,
+                                $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
     {
-        # code...
+        return $this->APICall('sendMessage',[
+                'chat_id' => $chat_id,
+                'text' => $text,
+                'parse_mode' => $parse_mode,
+                'disable_web_page_preview' => $disable_web_page_preview,
+                'disable_notification' => $disable_notification,
+                'reply_to_message_id' => $reply_to_message_id,
+                'reply_markup' => $reply_markup
+        ]);
     }
 
     public function forwardMessage()

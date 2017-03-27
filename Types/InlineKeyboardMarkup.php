@@ -2,4 +2,4 @@
 
 namespace MFRNA\TelegramBot\Types;
 
-class Chat extends Type{ }
+class InlineKeyboardMarkup extends Type{ }

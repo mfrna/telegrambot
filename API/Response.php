@@ -2,6 +2,7 @@
 namespace MFRNA\TelegramBot\API;
 
 use MFRNA\TelegramBot\Exceptions\JSONException;
+use MFRNA\TelegramBot\Contracts\ResponseInterface;
 
 /**
 * 
