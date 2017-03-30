@@ -11,9 +11,9 @@ abstract class Type implements \JsonSerializable{
     protected $validProps;
     protected $readOnly;
 
-    public function __construct(array $props)
+    public function __construct(array $response)
     {
-        $this->props = $props;
+        $this->props = $response['result'];
     }
 
 	public function __ToString()
@@ -28,7 +28,6 @@ abstract class Type implements \JsonSerializable{
 
     public function __set($name,$value)
     {
-//        var_dump($this);exit;
         if(in_array($name, $this->readOnly)){
             throw new NotWritablePropertyException("Property ". $name . " is not writeable in " . get_class($this));
         }
@@ -37,5 +36,13 @@ abstract class Type implements \JsonSerializable{
         }
 
         $this->props[$name] = $value;
+	}
+
+    public function __get($name)
+    {
+        if(!in_array($name, $this->validProps)){
+            throw new InvalidPropertyException("Property ". $name . " does not exist in " . get_class($this));
+        }
+        return $this->props[$name];
 	}
 }

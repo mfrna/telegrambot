@@ -11,6 +11,7 @@ class Bot{
     protected $api_url = 'https://api.telegram.org/bot';
     protected $token;
     private $response;
+    private $file_upload = false;
 
     const HTTP_CODE_OK = 200;
 
@@ -54,7 +55,10 @@ class Bot{
             $options[CURLOPT_POSTFIELDS] = $params;
         }
 
-        
+        if($this->file_upload){
+            $options[CURLOPT_HTTPHEADER] = ["Content-Type:multipart/form-data"];
+        }
+
         try{
             $curlRes = curl_init();
             curl_setopt_array($curlRes, $options);
@@ -84,10 +88,22 @@ class Bot{
         return new Types\User($this->APICall('getMe'));
     }
 
-    public function sendMessage($chat_id, $text, $parse_mode = null,$disable_web_page_preview = null,
+    /**
+     * Use this method to send text messages. On success, the sent Message is returned
+     *
+     * @param $chat_id
+     * @param $text
+     * @param string|null $parse_mode
+     * @param bool|null $disable_web_page_preview
+     * @param bool|null $disable_notification
+     * @param int|null $reply_to_message_id
+     * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
+     * @return Types\Message
+     */
+    public function sendMessage($chat_id, $text, $parse_mode = null, $disable_web_page_preview = null,
                                 $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
     {
-        return $this->APICall('sendMessage',[
+        return new Types\Message($this->APICall('sendMessage',[
                 'chat_id' => $chat_id,
                 'text' => $text,
                 'parse_mode' => $parse_mode,
@@ -95,17 +111,50 @@ class Bot{
                 'disable_notification' => $disable_notification,
                 'reply_to_message_id' => $reply_to_message_id,
                 'reply_markup' => $reply_markup
-        ]);
+        ]));
     }
 
-    public function forwardMessage()
+    /**
+     * Forward messages of any kind. On success, the sent Message is returned
+     *
+     * @param int|string $chat_id
+     * @param int|string $from_chat_id
+     * @param int $message_id
+     * @param bool $disable_notification
+     * @return Types\Message
+     */
+    public function forwardMessage($chat_id, $from_chat_id, $message_id, $disable_notification = null)
     {
-        # code...
+        return new Types\Message($this->APICall('forwardMessage', [
+            'chat_id' => $chat_id,
+            'from_chat_id' => $from_chat_id,
+            'message_id' => $message_id,
+            'disable_notification' => $disable_notification
+        ]));
     }
 
-    public function sendPhoto()
+    /**
+     * Send photos. On success, the sent Message is returned.
+     *
+     * @param int|string $chat_id
+     * @param \CurlFile|string $photo
+     * @param string|null $caption
+     * @param bool|null $disable_notification
+     * @param int|null $reply_to_message_id
+     * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
+     * @return Types\Message
+     */
+    public function sendPhoto($chat_id, $photo, $caption = null, $disable_notification = null,
+                              $reply_to_message_id = null, $reply_markup = null)
     {
-        # code...
+        return new Types\Message($this->APICall('sendPhoto', [
+            'chat_id' => $chat_id,
+            'photo' => Types\InputFile::findFile($photo),
+            'caption' => $caption,
+            'disable_notification' => $disable_notification,
+            'reply_to_message_id' => $reply_to_message_id,
+            'reply_markup' => $reply_markup
+        ]));
     }
 
     public function sendAudio()
@@ -274,5 +323,4 @@ class Bot{
     {
         # code...
     }
-    
 }

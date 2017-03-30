@@ -2,4 +2,13 @@
 
 namespace MFRNA\TelegramBot\Types;
 
-class InlineKeyboardMarkup extends Type{ }
+/**
+ * Class InlineKeyboardMarkup
+ *
+ *
+ * @package MFRNA\TelegramBot\Types
+ * @property array(InlineKeyboardButton[]) inline_keyboard
+ */
+class InlineKeyboardMarkup extends Type{
+    protected $validProps = ['inline_keyboard'];
+}

@@ -11,7 +11,7 @@ namespace MFRNA\TelegramBot\Types;
  * @property string|null username
  * @property string|null first_name
  * @property string|null last_name
- * @property boolean|null all_members_are_administrators
+ * @property bool|null all_members_are_administrators
  */
 class Chat extends Type{
     protected $readOnly = array('id','type','title','username','first_name','last_name','all_members_are_administrators');
