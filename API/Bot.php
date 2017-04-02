@@ -65,7 +65,8 @@ class Bot{
             $result = curl_exec($curlRes);
 
             if(($httpCode = curl_getinfo($curlRes, CURLINFO_HTTP_CODE)) && $httpCode !== self::HTTP_CODE_OK) {
-                throw new HttpException($httpCode);
+                $result = json_decode($result);
+                throw new HttpException($result->description ,$httpCode);
             }
             
             $response = $this->response->handle($result);
@@ -110,7 +111,7 @@ class Bot{
                 'disable_web_page_preview' => $disable_web_page_preview,
                 'disable_notification' => $disable_notification,
                 'reply_to_message_id' => $reply_to_message_id,
-                'reply_markup' => $reply_markup
+                'reply_markup' => (string)$reply_markup
         ]));
     }
 
@@ -153,7 +154,7 @@ class Bot{
             'caption' => $caption,
             'disable_notification' => $disable_notification,
             'reply_to_message_id' => $reply_to_message_id,
-            'reply_markup' => $reply_markup
+            'reply_markup' => (string)$reply_markup
         ]));
     }
 
@@ -162,14 +163,52 @@ class Bot{
         # code...
     }
 
-    public function sendDocument()
+    /**
+     * Send documents. On success, the sent Message is returned.
+     *
+     * @param int|string $chat_id
+     * @param \CurlFile|string $document
+     * @param string|null $caption
+     * @param bool|null $disable_notification
+     * @param int|null $reply_to_message_id
+     * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
+     * @return Types\Message
+     */
+    public function sendDocument($chat_id, $document, $caption = null, $disable_notification = null,
+                                 $reply_to_message_id = null, $reply_markup = null)
     {
-        # code...
+        return new Types\Message($this->APICall('sendDocument', [
+            'chat_id' => $chat_id,
+            'document' => Types\InputFile::findFile($document),
+            'caption' => $caption,
+            'disable_notification' => $disable_notification,
+            'reply_to_message_id' => $reply_to_message_id,
+            'reply_markup' => (string)$reply_markup
+        ]));
     }
 
-    public function sendSticker()
+    /**
+     * Send stickers. On success, the sent Message is returned.
+     *
+     * @param int|string $chat_id
+     * @param \CurlFile|string $sticker
+     * @param string|null $caption
+     * @param bool|null $disable_notification
+     * @param int|null $reply_to_message_id
+     * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
+     * @return Types\Message
+     */
+    public function sendSticker($chat_id, $sticker, $caption = null, $disable_notification = null,
+                                 $reply_to_message_id = null, $reply_markup = null)
     {
-        # code...
+        return new Types\Message($this->APICall('sendSticker', [
+            'chat_id' => $chat_id,
+            'sticker' => Types\InputFile::findFile($sticker),
+            'caption' => $caption,
+            'disable_notification' => $disable_notification,
+            'reply_to_message_id' => $reply_to_message_id,
+            'reply_markup' => (string)$reply_markup
+        ]));
     }
 
     public function sendVideo()
@@ -177,9 +216,32 @@ class Bot{
         # code...
     }
 
-    public function sendVoice()
+    /**
+     * Send audio files, if you want Telegram clients to display the file as a playable voice message.
+     * For this to work, your audio must be in an .ogg file encoded with OPUS (other formats may be sent as Audio
+     * or Document). On success, the sent Message is returned.
+     *
+     * @param int|string $chat_id
+     * @param \CurlFile|string $voice
+     * @param int|null $duration
+     * @param string|null $caption
+     * @param bool|null $disable_notification
+     * @param int|null $reply_to_message_id
+     * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
+     * @return Types\Message
+     */
+    public function sendVoice($chat_id, $voice, $duration = null, $caption = null, $disable_notification = null,
+                                $reply_to_message_id = null, $reply_markup = null)
     {
-        # code...
+        return new Types\Message($this->APICall('sendVoice', [
+            'chat_id' => $chat_id,
+            'voice' => Types\InputFile::findFile($voice),
+            'duration' => $duration,
+            'caption' => $caption,
+            'disable_notification' => $disable_notification,
+            'reply_to_message_id' => $reply_to_message_id,
+            'reply_markup' => (string)$reply_markup
+        ]));
     }
 
     public function sendLocation()
@@ -284,19 +346,109 @@ class Bot{
         ]));
     }
 
-    public function answerCallbackQuery()
+    /**
+     * Send answers to callback queries sent from inline keyboards. The answer will
+     * be displayed to the user as a notification at the top of the chat screen or as an alert.
+     * 
+     * Alternatively, the user can be redirected to the specified Game URL. For this option to work,
+     * you must first create a game for your bot via BotFather and accept the terms. Otherwise, you
+     * may use links like telegram.me/your_bot?start=XXXX that open your bot with a parameter.
+     *
+     * Returns a status array
+     * 
+     * @param string $callback_query_id 
+     * @param string $text 
+     * @param bool $show_alert 
+     * @param string $url 
+     * @param int $cache_time 
+     * @return array
+     */
+    public function answerCallbackQuery($callback_query_id, $text = "", $show_alert = false,
+        $url ="" , $cache_time = 0)
     {
-        # code...
+        return $this->APICall('answerCallbackQuery', [
+            'callback_query_id' => $callback_query_id,
+            'text' => $text,
+            'show_alert' => $show_alert,
+            'url' => $url,
+            'cache_time' => $cache_time
+        ]);
     }
 
-    public function editMessageText()
+    /**
+     * Edit text and game messages sent by the bot or via the bot (for inline bots)
+     *
+     * @param string $text
+     * @param string|int|null $chat_id
+     * @param int|null $message_id
+     * @param string|null $inline_message_id
+     * @param string|null $parse_mode
+     * @param bool|null $disable_web_page_preview
+     * @param Types\InlineKeyboardMarkup|null $reply_markup
+     * @return Types\Message
+     * @throws APICallException
+     * @throws \BadMethodCallException
+     */
+    public function editMessageText($text, $chat_id = null, $message_id = null, $inline_message_id = null,
+                                    $parse_mode = null, $disable_web_page_preview = null, $reply_markup = null)
     {
-        # code...
+        $params = [
+            'text' => $text,
+            'parse_mode' => $parse_mode,
+            'disable_web_page_preview' => $disable_web_page_preview,
+            'reply_markup' => $reply_markup
+        ];
+        if(isset($inline_message_id)){
+            $params['inline_message_id'] = $inline_message_id;
+        }elseif(isset($chat_id) && isset($message_id)){
+            $params['chat_id'] = $chat_id;
+            $params['message_id'] = $message_id;
+        }else{
+            throw new \BadMethodCallException("Must pass at least \$inline_message_id or \$chat_id and \$message_id");
+        }
+        try{
+            $call = $this->APICall('editMessageText', $params);
+        }catch (HttpException $e){
+            throw new APICallException($e->getMessage(),$e->getCode(),$e);
+        }
+
+        return $call;
     }
 
-    public function editMessageCaption()
+    /**
+     * Edit captions of messages sent by the bot or via the bot (for inline bots)
+     *
+     * @param string $caption
+     * @param string|int|null $chat_id
+     * @param int|null $message_id
+     * @param string|null $inline_message_id
+     * @param Types\InlineKeyboardMarkup|null $reply_markup
+     * @return Types\Message
+     * @throws APICallException
+     * @throws \BadMethodCallException
+     */
+    public function editMessageCaption($caption, $chat_id = null, $message_id = null, $inline_message_id = null,
+                                       $reply_markup = null)
     {
-        # code...
+        $params = [
+            'caption' => $caption,
+            'reply_markup' => $reply_markup
+        ];
+        if(isset($inline_message_id)){
+            $params['inline_message_id'] = $inline_message_id;
+        }elseif(isset($chat_id) && isset($message_id)){
+            $params['chat_id'] = $chat_id;
+            $params['message_id'] = $message_id;
+        }else{
+            throw new \BadMethodCallException("Must pass at least \$inline_message_id or \$chat_id and \$message_id");
+        }
+        try{
+            $call = $this->APICall('editMessageCaption', $params);
+        }catch (HttpException $e){
+            throw new APICallException($e->getMessage(),$e->getCode(),$e);
+        }
+
+        return $call;
     }
 
     public function editMessageReplyMarkup()

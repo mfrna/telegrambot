@@ -12,7 +12,7 @@ namespace MFRNA\TelegramBot\Types;
  * @property string switch_inline_query_current_chat
  * @property CallbackGame callback_game
  */
-class InlineKeyboardButton
+class InlineKeyboardButton extends Type
 {
     protected $readOnly = array();
     protected $validProps = array(
@@ -23,4 +23,9 @@ class InlineKeyboardButton
         'switch_inline_query_current_chat',
         'callback_game'
     );
+
+    public function __construct($button)
+    {
+    	parent::__construct(['result'=>$button]);
+    }
 }

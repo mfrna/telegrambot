@@ -16,7 +16,7 @@ abstract class Type implements \JsonSerializable{
         $this->props = $response['result'];
     }
 
-	public function __ToString()
+	public function __toString()
 	{
 		return json_encode($this->props);
 	}

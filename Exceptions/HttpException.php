@@ -60,10 +60,12 @@ class HttpException extends \Exception
     
     public function __construct($message = "", $code = 0, $previous = NULL)
     {
-        // Curl Errors return with HTTP Code
-        // Code is provided as first parameter, now needs to be resolved to a message
-        $code = $message;
-        $message = self::$httpCodes[$code];
+        if(func_num_args()==1){
+            // Curl Errors return with HTTP Code
+            // Code is provided as first parameter, now needs to be resolved to a message
+            $code = $message;
+            $message = self::$httpCodes[$code];
+        }
         parent::__construct($message, $code);
     }
 }
