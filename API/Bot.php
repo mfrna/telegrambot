@@ -323,7 +323,7 @@ class Bot{
     }
 
     /**
-     * Send point on the map. On success, the sent Message is returned
+     * Send information about a venue. On success, the sent Message is returned
      *
      * @param int|string $chat_id
      * @param float $latitude
@@ -353,9 +353,30 @@ class Bot{
         ]));
     }
 
-    public function sendContact()
+    /**
+     * Send phone contacts. On success, the sent Message is returned
+     *
+     * @param int|string $chat_id
+     * @param string $phone_number
+     * @param string $first_name
+     * @param string $last_name
+     * @param bool|null $disable_notification
+     * @param int|null $reply_to_message_id
+     * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
+     * @return Types\Message
+     */
+    public function sendContact($chat_id, $phone_number, $first_name, $last_name,
+        $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
     {
-        # code...
+        return new Types\Message($this->APICall('sendContact', [
+            'chat_id' => $chat_id,
+            'phone_number' => $phone_number,
+            'first_name' => $first_name,
+            'last_name' => $last_name,
+            'disable_notification' => $disable_notification,
+            'reply_to_message_id' => $reply_to_message_id,
+            'reply_markup' => (string)$reply_markup
+        ]));
     }
 
     public function sendChatAction()
