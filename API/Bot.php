@@ -7,7 +7,7 @@ use MFRNA\TelegramBot\Contracts\ResponseInterface;
 use MFRNA\TelegramBot\Types;
 
 class Bot{
-    
+
     protected $api_url = 'https://api.telegram.org/bot';
     protected $token;
     private $response;
@@ -68,7 +68,7 @@ class Bot{
                 $result = json_decode($result);
                 throw new HttpException($result->description ,$httpCode);
             }
-            
+
             $response = $this->response->handle($result);
         } catch(\Exception $e) {
             throw new APICallException($e->getMessage(), $e->getCode(), $e);
@@ -158,9 +158,36 @@ class Bot{
         ]));
     }
 
-    public function sendAudio()
+    /**
+     * Send audio files, if you want Telegram clients to display them in the
+     * music player. Your audio must be in the .mp3 format.
+     * On success, the sent Message is returned.
+     *
+     * @param int|string $chat_id
+     * @param \CurlFile|string $audio
+     * @param string|null $caption
+     * @param int|null $duration
+     * @param string|null $performer
+     * @param string|null $title
+     * @param bool|null $disable_notification
+     * @param int|null $reply_to_message_id
+     * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
+     * @return Types\Message
+     */
+    public function sendAudio($chat_id, $audio, $caption = null, $duration = null,
+        $performer = null, $title = null, $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
     {
-        # code...
+        return new Types\Message($this->APICall('sendAudio', [
+            'chat_id' => $chat_id,
+            'audio' => Types\InputFile::findFile($audio),
+            'caption' => $caption,
+            'duration' => $duration,
+            'performer' => $performer,
+            'title' => $title,
+            'disable_notification' => $disable_notification,
+            'reply_to_message_id' => $reply_to_message_id,
+            'reply_markup' => (string)$reply_markup
+        ]));
     }
 
     /**
@@ -211,9 +238,36 @@ class Bot{
         ]));
     }
 
-    public function sendVideo()
+    /**
+     * Send video files, Telegram clients support mp4 videos (other formats may
+     * be sent as Document). On success, the sent Message is returned.
+     *
+     * @param int|string $chat_id
+     * @param \CurlFile|string $video
+     * @param int|null $duration
+     * @param int|null $width
+     * @param int|null $height
+     * @param string|null $caption
+     * @param bool|null $disable_notification
+     * @param int|null $reply_to_message_id
+     * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
+     * @return Types\Message
+     */
+    public function sendVideo($chat_id, $video, $duration = null,
+        $width = null, $height = null, $caption = null,
+        $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
     {
-        # code...
+        return new Types\Message($this->APICall('sendVideo', [
+            'chat_id' => $chat_id,
+            'video' => Types\InputFile::findFile($video),
+            'duration' => $duration,
+            'width' => $width,
+            'height' => $height,
+            'caption' => $caption,
+            'disable_notification' => $disable_notification,
+            'reply_to_message_id' => $reply_to_message_id,
+            'reply_markup' => (string)$reply_markup
+        ]));
     }
 
     /**
@@ -244,14 +298,59 @@ class Bot{
         ]));
     }
 
-    public function sendLocation()
+    /**
+     * Send point on the map. On success, the sent Message is returned
+     *
+     * @param int|string $chat_id
+     * @param float $latitude
+     * @param float $longitude
+     * @param bool|null $disable_notification
+     * @param int|null $reply_to_message_id
+     * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
+     * @return Types\Message
+     */
+    public function sendLocation($chat_id, $latitude, $longitude, $disable_notification = null,
+                                $reply_to_message_id = null, $reply_markup = null)
     {
-        # code...
+        return new Types\Message($this->APICall('sendLocation', [
+            'chat_id' => $chat_id,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'disable_notification' => $disable_notification,
+            'reply_to_message_id' => $reply_to_message_id,
+            'reply_markup' => (string)$reply_markup
+        ]));
     }
 
-    public function sendVenue()
+    /**
+     * Send point on the map. On success, the sent Message is returned
+     *
+     * @param int|string $chat_id
+     * @param float $latitude
+     * @param float $longitude
+     * @param string $title
+     * @param string $address
+     * @param string|null $foursquare_id
+     * @param bool|null $disable_notification
+     * @param int|null $reply_to_message_id
+     * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
+     * @return Types\Message
+     */
+    public function sendVenue($chat_id, $latitude, $longitude, $title, $address,
+        $foursquare_id = null, $disable_notification = null,
+        $reply_to_message_id = null, $reply_markup = null)
     {
-        # code...
+        return new Types\Message($this->APICall('sendVenue', [
+            'chat_id' => $chat_id,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'title' => $title,
+            'address' => $address,
+            'foursquare_id' => $foursquare_id,
+            'disable_notification' => $disable_notification,
+            'reply_to_message_id' => $reply_to_message_id,
+            'reply_markup' => (string)$reply_markup
+        ]));
     }
 
     public function sendContact()
@@ -306,7 +405,7 @@ class Bot{
      * On success, returns an Array of ChatMember objects that contains information about all chat administrators
      * except other bots.
      * If the chat is a group or a supergroup and no administrators were appointed, only the creator will be returned.
-     * 
+     *
      * @param $chat_id String|Integer
      * @return User[]
      */
@@ -349,18 +448,18 @@ class Bot{
     /**
      * Send answers to callback queries sent from inline keyboards. The answer will
      * be displayed to the user as a notification at the top of the chat screen or as an alert.
-     * 
+     *
      * Alternatively, the user can be redirected to the specified Game URL. For this option to work,
      * you must first create a game for your bot via BotFather and accept the terms. Otherwise, you
      * may use links like telegram.me/your_bot?start=XXXX that open your bot with a parameter.
      *
      * Returns a status array
-     * 
-     * @param string $callback_query_id 
-     * @param string $text 
-     * @param bool $show_alert 
-     * @param string $url 
-     * @param int $cache_time 
+     *
+     * @param string $callback_query_id
+     * @param string $text
+     * @param bool $show_alert
+     * @param string $url
+     * @param int $cache_time
      * @return array
      */
     public function answerCallbackQuery($callback_query_id, $text = "", $show_alert = false,
