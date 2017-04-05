@@ -101,8 +101,9 @@ class Bot{
      * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
      * @return Types\Message
      */
-    public function sendMessage($chat_id, $text, $parse_mode = null, $disable_web_page_preview = null,
-                                $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
+    public function sendMessage($chat_id, $text, $parse_mode = null,
+        $disable_web_page_preview = null, $disable_notification = null,
+        $reply_to_message_id = null, $reply_markup = null)
     {
         return new Types\Message($this->APICall('sendMessage',[
                 'chat_id' => $chat_id,
@@ -124,7 +125,8 @@ class Bot{
      * @param bool $disable_notification
      * @return Types\Message
      */
-    public function forwardMessage($chat_id, $from_chat_id, $message_id, $disable_notification = null)
+    public function forwardMessage($chat_id, $from_chat_id, $message_id,
+        $disable_notification = null)
     {
         return new Types\Message($this->APICall('forwardMessage', [
             'chat_id' => $chat_id,
@@ -145,8 +147,8 @@ class Bot{
      * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
      * @return Types\Message
      */
-    public function sendPhoto($chat_id, $photo, $caption = null, $disable_notification = null,
-                              $reply_to_message_id = null, $reply_markup = null)
+    public function sendPhoto($chat_id, $photo, $caption = null,
+        $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
     {
         return new Types\Message($this->APICall('sendPhoto', [
             'chat_id' => $chat_id,
@@ -175,7 +177,8 @@ class Bot{
      * @return Types\Message
      */
     public function sendAudio($chat_id, $audio, $caption = null, $duration = null,
-        $performer = null, $title = null, $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
+        $performer = null, $title = null, $disable_notification = null,
+        $reply_to_message_id = null, $reply_markup = null)
     {
         return new Types\Message($this->APICall('sendAudio', [
             'chat_id' => $chat_id,
@@ -201,8 +204,8 @@ class Bot{
      * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
      * @return Types\Message
      */
-    public function sendDocument($chat_id, $document, $caption = null, $disable_notification = null,
-                                 $reply_to_message_id = null, $reply_markup = null)
+    public function sendDocument($chat_id, $document, $caption = null,
+        $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
     {
         return new Types\Message($this->APICall('sendDocument', [
             'chat_id' => $chat_id,
@@ -225,8 +228,8 @@ class Bot{
      * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
      * @return Types\Message
      */
-    public function sendSticker($chat_id, $sticker, $caption = null, $disable_notification = null,
-                                 $reply_to_message_id = null, $reply_markup = null)
+    public function sendSticker($chat_id, $sticker, $caption = null,
+        $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
     {
         return new Types\Message($this->APICall('sendSticker', [
             'chat_id' => $chat_id,
@@ -284,8 +287,8 @@ class Bot{
      * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
      * @return Types\Message
      */
-    public function sendVoice($chat_id, $voice, $duration = null, $caption = null, $disable_notification = null,
-                                $reply_to_message_id = null, $reply_markup = null)
+    public function sendVoice($chat_id, $voice, $duration = null, $caption = null,
+        $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
     {
         return new Types\Message($this->APICall('sendVoice', [
             'chat_id' => $chat_id,
@@ -310,7 +313,7 @@ class Bot{
      * @return Types\Message
      */
     public function sendLocation($chat_id, $latitude, $longitude, $disable_notification = null,
-                                $reply_to_message_id = null, $reply_markup = null)
+        $reply_to_message_id = null, $reply_markup = null)
     {
         return new Types\Message($this->APICall('sendLocation', [
             'chat_id' => $chat_id,
@@ -379,9 +382,21 @@ class Bot{
         ]));
     }
 
-    public function sendChatAction()
+    /**
+     * Tell the user that something is happening on the bot's side. The status
+     * is set for 5 seconds or less (when a message arrives from your bot,
+     * Telegram clients clear its typing status). Returns True on success.
+     *
+     * @param int|string $chat_id
+     * @param string $action
+     * @return Types\Message
+     */
+    public function sendChatAction($chat_id, $action)
     {
-        # code...
+        return $this->APICall('sendChatAction', [
+            'chat_id' => $chat_id,
+            'action' => $action
+        ]);
     }
 
     public function getUserProfilePhotos()
@@ -423,9 +438,10 @@ class Bot{
 
     /**
      * Get a list of administrators in a chat.
-     * On success, returns an Array of ChatMember objects that contains information about all chat administrators
-     * except other bots.
-     * If the chat is a group or a supergroup and no administrators were appointed, only the creator will be returned.
+     * On success, returns an Array of ChatMember objects that contains
+     * information about all chat administrators except other bots.
+     * If the chat is a group or a supergroup and no administrators were
+     * appointed, only the creator will be returned.
      *
      * @param $chat_id String|Integer
      * @return User[]
@@ -509,8 +525,9 @@ class Bot{
      * @throws APICallException
      * @throws \BadMethodCallException
      */
-    public function editMessageText($text, $chat_id = null, $message_id = null, $inline_message_id = null,
-                                    $parse_mode = null, $disable_web_page_preview = null, $reply_markup = null)
+    public function editMessageText($text, $chat_id = null, $message_id = null,
+        $inline_message_id = null, $parse_mode = null,
+        $disable_web_page_preview = null, $reply_markup = null)
     {
         $params = [
             'text' => $text,
@@ -547,8 +564,8 @@ class Bot{
      * @throws APICallException
      * @throws \BadMethodCallException
      */
-    public function editMessageCaption($caption, $chat_id = null, $message_id = null, $inline_message_id = null,
-                                       $reply_markup = null)
+    public function editMessageCaption($caption, $chat_id = null, $message_id = null,
+        $inline_message_id = null, $reply_markup = null)
     {
         $params = [
             'caption' => $caption,
