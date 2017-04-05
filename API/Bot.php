@@ -414,9 +414,17 @@ class Bot{
         # code...
     }
 
-    public function leaveChat()
+    /**
+     * Leave a group, supergroup or channel. Returns True on success.
+     *
+     * @param int|string $chat_id
+     * @return Types\Message
+     */
+    public function leaveChat($chat_id)
     {
-        # code...
+        return $this->APICall('leaveChat', [
+            'chat_id' => $chat_id
+        ]);
     }
 
     public function unbanChatMember()
