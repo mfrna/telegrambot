@@ -28,6 +28,7 @@ class Bot{
      * containing a JSON-serialized Update. In case of an unsuccessful request, Telegram will give up after a
      * reasonable amount of attempts.
      * @param $url
+     * @return bool
      */
     public function setWebHook($url)
     {
@@ -81,9 +82,8 @@ class Bot{
     * A simple method for testing your bot's auth token.
     * Returns basic information about the bot in form of a User object.
     *
-    * @Return Types\User
+    * @return Types\User
     */
-
     public function getMe()
     {
         return new Types\User($this->APICall('getMe'));
@@ -389,7 +389,7 @@ class Bot{
      *
      * @param int|string $chat_id
      * @param string $action
-     * @return Types\Message
+     * @return bool
      */
     public function sendChatAction($chat_id, $action)
     {
@@ -399,19 +399,55 @@ class Bot{
         ]);
     }
 
-    public function getUserProfilePhotos()
+    /**
+     * Get a list of profile pictures for a user.
+     *
+     * @param int $user_id
+     * @param int|null $offset
+     * @param int|null $limit
+     * @return Types\UserProfilePhotos
+     */
+    public function getUserProfilePhotos($user_id, $offset = null, $limit = null)
     {
-        # code...
+        return new Types\UserProfilePhotos($this->APICall('getUserProfilePhotos', [
+            'user_id' => $user_id,
+            'offset' => $offset,
+            'limit' => $limit
+        ]));
     }
 
-    public function getFile()
+    /**
+     * Get basic info about a file and prepare it for downloading.
+     * For the moment, bots can download files of up to 20MB in size.
+     * On success, a File object is returned. The file can then be downloaded via the link
+     * https://api.telegram.org/file/bot<token>/<file_path>, where <file_path> is taken from the response.
+     * It is guaranteed that the link will be valid for at least 1 hour.
+     * When the link expires, a new one can be requested by calling getFile again.
+     *
+     * @param string $file_id
+     * @return Types\File
+     */
+    public function getFile($file_id)
     {
-        # code...
+        return new Types\File($this>$this->APICall('getFile', [
+                'file_id' => $file_id
+            ]));
     }
 
-    public function kickChatMember()
+    /**
+     * Kick a user from a group or a supergroup. In the case of supergroups, the user will not be able to return to the
+     * group on their own using invite links, etc., unless unbanned first.
+     *
+     * @param int|string $chat_id
+     * @param int $user_id
+     * @return bool
+     */
+    public function kickChatMember($chat_id, $user_id)
     {
-        # code...
+        return $this->APICall('kickChatMember', [
+            'chat_id' => $chat_id,
+            'user_id' =>$user_id
+        ]);
     }
 
     /**
@@ -427,9 +463,22 @@ class Bot{
         ]);
     }
 
-    public function unbanChatMember()
+    /**
+     * Unban a previously kicked user in a supergroup.
+     * The user will not return to the group automatically, but will be able to join via link, etc. The bot must be
+     * an administrator in the group for this to work.
+     * Returns True on success.
+     *
+     * @param string|int $chat_id
+     * @param int $user_id
+     * @return bool
+     */
+    public function unbanChatMember($chat_id, $user_id)
     {
-        # code...
+        return $this->APICall('unbanChatMember', [
+            'chat_id' => $chat_id,
+            'user_id' =>$user_id
+        ]);
     }
 
     /**
