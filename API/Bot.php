@@ -124,6 +124,7 @@ class Bot{
      * @param int $message_id
      * @param bool $disable_notification
      * @return Types\Message
+     * @Todo: Test
      */
     public function forwardMessage($chat_id, $from_chat_id, $message_id,
         $disable_notification = null)
@@ -175,6 +176,7 @@ class Bot{
      * @param int|null $reply_to_message_id
      * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
      * @return Types\Message
+     * @Todo: Test
      */
     public function sendAudio($chat_id, $audio, $caption = null, $duration = null,
         $performer = null, $title = null, $disable_notification = null,
@@ -203,6 +205,7 @@ class Bot{
      * @param int|null $reply_to_message_id
      * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
      * @return Types\Message
+     * @Todo: Test
      */
     public function sendDocument($chat_id, $document, $caption = null,
         $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
@@ -227,6 +230,7 @@ class Bot{
      * @param int|null $reply_to_message_id
      * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
      * @return Types\Message
+     * @Todo: Test
      */
     public function sendSticker($chat_id, $sticker, $caption = null,
         $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
@@ -255,6 +259,7 @@ class Bot{
      * @param int|null $reply_to_message_id
      * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
      * @return Types\Message
+     * @Todo: Test
      */
     public function sendVideo($chat_id, $video, $duration = null,
         $width = null, $height = null, $caption = null,
@@ -286,6 +291,7 @@ class Bot{
      * @param int|null $reply_to_message_id
      * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
      * @return Types\Message
+     * @Todo: Test
      */
     public function sendVoice($chat_id, $voice, $duration = null, $caption = null,
         $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
@@ -311,6 +317,7 @@ class Bot{
      * @param int|null $reply_to_message_id
      * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
      * @return Types\Message
+     * @Todo: Test
      */
     public function sendLocation($chat_id, $latitude, $longitude, $disable_notification = null,
         $reply_to_message_id = null, $reply_markup = null)
@@ -338,6 +345,7 @@ class Bot{
      * @param int|null $reply_to_message_id
      * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
      * @return Types\Message
+     * @Todo: Test
      */
     public function sendVenue($chat_id, $latitude, $longitude, $title, $address,
         $foursquare_id = null, $disable_notification = null,
@@ -367,6 +375,7 @@ class Bot{
      * @param int|null $reply_to_message_id
      * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
      * @return Types\Message
+     * @Todo: Test
      */
     public function sendContact($chat_id, $phone_number, $first_name, $last_name,
         $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
@@ -390,6 +399,7 @@ class Bot{
      * @param int|string $chat_id
      * @param string $action
      * @return bool
+     * @Todo: Test
      */
     public function sendChatAction($chat_id, $action)
     {
@@ -406,6 +416,7 @@ class Bot{
      * @param int|null $offset
      * @param int|null $limit
      * @return Types\UserProfilePhotos
+     * @Todo: Test
      */
     public function getUserProfilePhotos($user_id, $offset = null, $limit = null)
     {
@@ -426,6 +437,7 @@ class Bot{
      *
      * @param string $file_id
      * @return Types\File
+     * @Todo: Test
      */
     public function getFile($file_id)
     {
@@ -441,6 +453,7 @@ class Bot{
      * @param int|string $chat_id
      * @param int $user_id
      * @return bool
+     * @Todo: Test
      */
     public function kickChatMember($chat_id, $user_id)
     {
@@ -455,6 +468,7 @@ class Bot{
      *
      * @param int|string $chat_id
      * @return Types\Message
+     * @Todo: Test
      */
     public function leaveChat($chat_id)
     {
@@ -472,6 +486,7 @@ class Bot{
      * @param string|int $chat_id
      * @param int $user_id
      * @return bool
+     * @Todo: Test
      */
     public function unbanChatMember($chat_id, $user_id)
     {
@@ -487,6 +502,7 @@ class Bot{
      *
      * @param $chat_id String|Integer
      * @return Chat
+     * @Todo: Test
      */
     public function getChat($chat_id)
     {
@@ -502,6 +518,7 @@ class Bot{
      *
      * @param $chat_id String|Integer
      * @return User[]
+     * @Todo: Test
      */
     public function getChatAdministrators($chat_id)
     {
@@ -518,6 +535,7 @@ class Bot{
      *
      * @param $chat_id String|Integer
      * @return Integer
+     * @Todo: Test
      */
     public function getChatMembersCount($chat_id)
     {
@@ -530,6 +548,7 @@ class Bot{
      * @param $chat_id String|Integer
      * @param $user_id Integer
      * @return ChatMember
+     * @Todo: Test
      */
     public function getChatMember($chat_id, $user_id)
     {

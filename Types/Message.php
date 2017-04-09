@@ -39,6 +39,7 @@ namespace MFRNA\TelegramBot\Types;
  * @property int migrate_to_chat_id
  * @property int migrate_from_chat_id
  * @property Message pinned_message
+ * @Todo: autoload/init objects for attached entities
  */
 class Message extends Type 
 {
