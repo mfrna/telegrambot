@@ -15,4 +15,8 @@ class Document extends Type
 {
     protected $validProps = ['file_id','thumb','file_name','mime_type','file_size'];
     protected $readOnly = ['file_id','thumb','file_name','mime_type','file_size'];
+
+    protected $objectTypes = [
+        'thumb' => PhotoSize::class
+    ];
 }

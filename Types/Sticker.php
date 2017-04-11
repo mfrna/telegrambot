@@ -16,4 +16,8 @@ class Sticker extends Type
 {
     protected $validProps = ['file_id','width','height','thumb','emoji','file_size'];
     protected $readOnly = ['file_id','width','height','thumb','emoji','file_size'];
+
+    protected $objectTypes = [
+        'thumb' => PhotoSize::class
+    ];
 }

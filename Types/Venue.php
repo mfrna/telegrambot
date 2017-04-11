@@ -14,4 +14,8 @@ class Venue extends Type
 {
     protected $validProps = ['location','title','address','foursquare_id'];
     protected $readOnly = ['location','title','address','foursquare_id'];
+
+    protected $objectTypes = [
+        'location' => Location::class
+    ];
 }

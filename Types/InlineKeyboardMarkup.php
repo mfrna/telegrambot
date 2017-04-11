@@ -12,6 +12,10 @@ namespace MFRNA\TelegramBot\Types;
 class InlineKeyboardMarkup extends Type{
     protected $validProps = ['inline_keyboard'];
 
+    protected $objectTypes = [
+        'inline_keyboard' => [[InlineKeyboardButton::class]]
+    ];
+
     public function __construct(array $inline_keyboard)
     {
         parent::__construct(['result'=>['inline_keyboard'=>$inline_keyboard]]);

@@ -17,4 +17,8 @@ class Video extends Type
 {
     protected $validProps = ['file_id','width','height','duration','thumb','mime_type','file_size'];
     protected $readOnly = ['file_id','width','height','duration','thumb','mime_type','file_size'];
+
+    protected $objectTypes = [
+        'thumb' => PhotoSize::class
+    ];
 }

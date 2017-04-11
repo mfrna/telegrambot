@@ -17,4 +17,10 @@ class Game extends Type
 {
     protected $validProps = ['title','description','photo','text','text_entities','animation'];
     protected $readOnly = ['title','description','photo','text','text_entities','animation'];
+
+    protected $objectTypes = [
+        'photo' => [PhotoSize::class],
+        'text_entities' => [MessageEntity::class],
+        'animation' => Animation::class
+    ];
 }

@@ -24,6 +24,10 @@ class InlineKeyboardButton extends Type
         'callback_game'
     );
 
+    protected $objectTypes = [
+        'callback_game' => CallbackGame::class
+    ];
+
     public function __construct($button)
     {
     	parent::__construct(['result'=>$button]);
