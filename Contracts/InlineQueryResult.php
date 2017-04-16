@@ -1,8 +1,7 @@
 <?php
 namespace MFRNA\TelegramBot\Contracts;
 
-interface TypeInterface{
-    
-}
+interface InlineQueryResult
+{
 
-?>
+}

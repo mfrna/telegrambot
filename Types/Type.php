@@ -22,7 +22,7 @@ abstract class Type implements \JsonSerializable{
                 // handle multi value resposnse, e.g. entities
                 if(!empty($response[$objectType]) && is_array($class )){
                     // array of array of objects, e.g. photosizes
-                    error_log(var_export($class, true));
+
                     foreach ($response[$objectType] as $subobjk => $subobjv){
                         if(is_array($class[0])){
                             $class = $class[0][0];

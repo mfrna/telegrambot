@@ -517,7 +517,7 @@ class Bot{
      * appointed, only the creator will be returned.
      *
      * @param $chat_id String|Integer
-     * @return User[]
+     * @return Types\User[]
      * @Todo: Test
      */
     public function getChatAdministrators($chat_id)
@@ -597,9 +597,8 @@ class Bot{
      * @param string|null $parse_mode
      * @param bool|null $disable_web_page_preview
      * @param Types\InlineKeyboardMarkup|null $reply_markup
-     * @return Types\Message
-     * @throws APICallException
      * @throws \BadMethodCallException
+     * @return Types\Message
      */
     public function editMessageText($text, $chat_id = null, $message_id = null,
         $inline_message_id = null, $parse_mode = null,
@@ -619,11 +618,8 @@ class Bot{
         }else{
             throw new \BadMethodCallException("Must pass at least \$inline_message_id or \$chat_id and \$message_id");
         }
-        try{
-            $call = $this->APICall('editMessageText', $params);
-        }catch (HttpException $e){
-            throw new APICallException($e->getMessage(),$e->getCode(),$e);
-        }
+
+        $call = $this->APICall('editMessageText', $params);
 
         return $call;
     }
@@ -636,9 +632,8 @@ class Bot{
      * @param int|null $message_id
      * @param string|null $inline_message_id
      * @param Types\InlineKeyboardMarkup|null $reply_markup
-     * @return Types\Message
-     * @throws APICallException
      * @throws \BadMethodCallException
+     * @return Types\Message
      */
     public function editMessageCaption($caption, $chat_id = null, $message_id = null,
         $inline_message_id = null, $reply_markup = null)
@@ -655,23 +650,64 @@ class Bot{
         }else{
             throw new \BadMethodCallException("Must pass at least \$inline_message_id or \$chat_id and \$message_id");
         }
-        try{
-            $call = $this->APICall('editMessageCaption', $params);
-        }catch (HttpException $e){
-            throw new APICallException($e->getMessage(),$e->getCode(),$e);
-        }
+
+        $call = $this->APICall('editMessageCaption', $params);
 
         return $call;
     }
 
-    public function editMessageReplyMarkup()
+    /**
+     * Edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
+     * On success, if edited message is sent by the bot, the edited Message is returned
+     *
+     * @param string|int|null $chat_id
+     * @param int|null $message_id
+     * @param string|null $inline_message_id
+     * @param Types\InlineKeyboardMarkup|null $reply_markup
+     * @throws \BadMethodCallException
+     * @return Types\Message
+     */
+    public function editMessageReplyMarkup($chat_id = null, $message_id = null, $inline_message_id = null, $reply_markup = null)
     {
-        # code...
+        $params = [
+            'reply_markup' => $reply_markup
+        ];
+        if(isset($inline_message_id)){
+            $params['inline_message_id'] = $inline_message_id;
+        }elseif(isset($chat_id) && isset($message_id)){
+            $params['chat_id'] = $chat_id;
+            $params['message_id'] = $message_id;
+        }else{
+            throw new \BadMethodCallException("Must pass at least \$inline_message_id or \$chat_id and \$message_id");
+        }
+
+        return new Types\Message($this->APICall('editMessageReplyMarkup',$params));
     }
 
-    public function answerInlineQuery()
+    /**
+     * Send answers to an inline query. On success, True is returned.
+     * No more than 50 results per query are allowed.
+     * @param string $inline_query_id
+     * @param Types\InlineQueryResult[] $results
+     * @param int|null $cache_time
+     * @param bool|null $is_personal
+     * @param string|null $next_offset
+     * @param string|null $switch_pm_text
+     * @param string|null $switch_pm_parameter
+     * @return bool
+     */
+    public function answerInlineQuery($inline_query_id, $results, $cache_time = null, $is_personal = null, $next_offset = null,
+        $switch_pm_text = null, $switch_pm_parameter = null)
     {
-        # code...
+        return $this->APICall('answerInlineQuery',[
+            'inline_query_id' => $inline_query_id,
+            'results' => $results,
+            'cache_time' => $cache_time,
+            'is_personal' => $is_personal,
+            'next_offset' => $next_offset,
+            'switch_pm_text' => $switch_pm_text,
+            'switch_pm_parameter' => $switch_pm_parameter
+        ]);
     }
 
     public function sendGame()
