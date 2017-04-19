@@ -6,7 +6,7 @@ namespace MFRNA\TelegramBot\Types;
  * Class UserProfilePhotos
  * @package MFRNA\TelegramBot\Types
  * @property int total_count
- * @property [[PhotoSize]] photos (array of array of PhotoSize's)
+ * @property PhotoSize[][] photos (array of array of PhotoSize's)
  */
 class UserProfilePhotos extends Type
 {

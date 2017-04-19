@@ -524,7 +524,7 @@ class Bot{
     {
         $adminsJson = $this->APICall('getChatAdministrators',['chat_id' => $chat_id]);
         $admins = array();
-        foreach ($adminsJson as $admin) {
+        foreach ($adminsJson['result'] as $admin) {
             $admins[] = new Types\User($admin);
         }
         return $admins;
@@ -695,6 +695,7 @@ class Bot{
      * @param string|null $switch_pm_text
      * @param string|null $switch_pm_parameter
      * @return bool
+     * @Todo: Implement InlineQuery Types and Test
      */
     public function answerInlineQuery($inline_query_id, $results, $cache_time = null, $is_personal = null, $next_offset = null,
         $switch_pm_text = null, $switch_pm_parameter = null)
@@ -710,18 +711,94 @@ class Bot{
         ]);
     }
 
-    public function sendGame()
+    /**
+     * Send a game
+     * @param int $chat_id
+     * @param string $game_short_name
+     * @param bool|null $disable_notification
+     * @param int|null $reply_to_message_id
+     * @param Types\InlineKeyboardMarkup|null $reply_markup
+     * @return Types\Message
+     */
+    public function sendGame($chat_id, $game_short_name, $disable_notification = null, $reply_to_message_id = null,
+        $reply_markup = null)
     {
-        # code...
+        return new Types\Message($this->APICall('sendGame', [
+            'chat_id' => $chat_id,
+            'game_short_name' => $game_short_name,
+            'disable_notification' => $disable_notification,
+            'reply_to_message_id' => $reply_to_message_id,
+            'reply_markup' => $reply_markup
+        ]));
     }
 
-    public function setGameScore()
+    /**
+     * Set the score of the specified user in a game.
+     * On success, if the message was sent by the bot, returns the edited Message, otherwise returns True.
+     * Returns an error, if the new score is not greater than the user's current score in the chat and force is False.
+     *
+     * @param int $user_id
+     * @param int $score
+     * @param bool|null $force
+     * @param bool|null $disable_edit_message
+     * @param int|null $chat_id
+     * @param int|null $message_id
+     * @param string|null $inline_message_id
+     * @return Types\Message
+     * @throws \BadMethodCallException
+     */
+    public function setGameScore($user_id, $score, $force = null, $disable_edit_message = null, $chat_id = null,
+        $message_id = null, $inline_message_id = null)
     {
-        # code...
+        $params = [
+            'user_id' => $user_id,
+            'score' => $score,
+            'force' => $force,
+            'disable_edit_message' => $disable_edit_message
+        ];
+
+        if(isset($inline_message_id)){
+            $params['inline_message_id'] = $inline_message_id;
+        }elseif(isset($chat_id) && isset($message_id)){
+            $params['chat_id'] = $chat_id;
+            $params['message_id'] = $message_id;
+        }else{
+            throw new \BadMethodCallException("Must pass at least \$inline_message_id or \$chat_id and \$message_id");
+        }
+
+        return new Types\Message($this->APICall('setGameScore', $params));
     }
 
-    public function getGameHighScores()
+    /**
+     * Get data for high score tables. Will return the score of the specified user and several of his neighbors in a game.
+     * @param int $user_id
+     * @param int|null $chat_id
+     * @param int|null $message_id
+     * @param string|null $inline_message_id
+     * @return Types\GameHighScore[]
+     * @throws \BadMethodCallException
+     * @Todo: Test
+     */
+    public function getGameHighScores($user_id, $chat_id = null, $message_id = null, $inline_message_id = null)
     {
-        # code...
+        $params = [
+            'user_id' => $user_id
+        ];
+        if(isset($inline_message_id)){
+            $params['inline_message_id'] = $inline_message_id;
+        }elseif(isset($chat_id) && isset($message_id)){
+            $params['chat_id'] = $chat_id;
+            $params['message_id'] = $message_id;
+        }else{
+            throw new \BadMethodCallException("Must pass at least \$inline_message_id or \$chat_id and \$message_id");
+        }
+        $scoresJSON = $this->APICall('getGameHighScores', $params);
+
+        $scores = [];
+
+        foreach ($scoresJSON['result'] as $score){
+            $scores[] = new Types\GameHighScore($score);
+        }
+        return $scores;
     }
 }
