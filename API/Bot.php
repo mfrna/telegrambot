@@ -16,9 +16,8 @@ class Bot{
     const HTTP_CODE_OK = 200;
 
 
-    public function __construct(ResponseInterface $response, $token)
+    public function __construct($token)
     {
-        $this->response = $response;
         $this->token = $token;
     }
 
@@ -70,7 +69,12 @@ class Bot{
                 throw new HttpException($result->description ,$httpCode);
             }
 
-            $response = $this->response->handle($result);
+            $response = json_decode($result, true);
+            if(!$response) {
+                throw new JSONException("Empty JSON returned", 1);
+            }
+
+//            $response = $this->response->handle($result);
         } catch(\Exception $e) {
             throw new APICallException($e->getMessage(), $e->getCode(), $e);
         }
