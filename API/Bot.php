@@ -3,14 +3,13 @@ namespace MFRNA\TelegramBot\API;
 
 use MFRNA\TelegramBot\Exceptions\HttpException;
 use MFRNA\TelegramBot\Exceptions\APICallException;
-use MFRNA\TelegramBot\Contracts\ResponseInterface;
+use MFRNA\TelegramBot\Exceptions\JSONException;
 use MFRNA\TelegramBot\Types;
 
 class Bot{
 
     protected $api_url = 'https://api.telegram.org/bot';
     protected $token;
-    private $response;
     private $file_upload = false;
 
     const HTTP_CODE_OK = 200;
@@ -74,7 +73,6 @@ class Bot{
                 throw new JSONException("Empty JSON returned", 1);
             }
 
-//            $response = $this->response->handle($result);
         } catch(\Exception $e) {
             throw new APICallException($e->getMessage(), $e->getCode(), $e);
         }
@@ -180,7 +178,6 @@ class Bot{
      * @param int|null $reply_to_message_id
      * @param Types\InlineKeyboardMarkup|Types\ReplyKeyboardMarkup|Types\ReplyKeyboardRemove|Types\ForceReply|null $reply_markup
      * @return Types\Message
-     * @Todo: Test
      */
     public function sendAudio($chat_id, $audio, $caption = null, $duration = null,
         $performer = null, $title = null, $disable_notification = null,
@@ -420,7 +417,6 @@ class Bot{
      * @param int|null $offset
      * @param int|null $limit
      * @return Types\UserProfilePhotos
-     * @Todo: Test
      */
     public function getUserProfilePhotos($user_id, $offset = null, $limit = null)
     {
@@ -551,7 +547,7 @@ class Bot{
      *
      * @param $chat_id String|Integer
      * @param $user_id Integer
-     * @return ChatMember
+     * @return Types\ChatMember
      * @Todo: Test
      */
     public function getChatMember($chat_id, $user_id)

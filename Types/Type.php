@@ -19,19 +19,21 @@ abstract class Type implements \JsonSerializable{
         }
         if(is_array($this->objectTypes) && count($this->objectTypes)){
             foreach ($this->objectTypes as $objectType => $class){
-                // handle multi value resposnse, e.g. entities
+                // handle multi value response, e.g. entities
                 if(!empty($response[$objectType]) && is_array($class )){
-                    // array of array of objects, e.g. photosizes
-
                     foreach ($response[$objectType] as $subobjk => $subobjv){
-                        if(is_array($class[0])){
+                        if(is_array($class[0])){ // array of array of objects, e.g. PhotoSizes
                             $class = $class[0][0];
                             foreach ($subobjv as $subsubobjk => $subsubobjv){
                                 $response[$objectType][$subobjk][$subsubobjk] = new $class($subsubobjv, true);
                             }
-                        }else{
+                        }else{ // array of objects, e.g. MessageEntities
                             list($class) = $class;
-                            $response[$objectType][$subobjk] = new $class($subobjv, true);
+                            if(class_exists($class)){
+                                $response[$objectType][$subobjk] = new $class($subobjv, true);
+                            } else {
+                                $response[$objectType][$subobjk] = new MessageEntity($subobjv, true);
+                            }
                         }
                     }
 
