@@ -1,5 +1,18 @@
 <?php
 
-namespace mfrna\telegrambot\Types;
+namespace MFRNA\TelegramBot\Types;
 
-class ChatMember extends Type{ }
+/**
+ * Class ChatMember
+ * @package MFRNA\TelegramBot\Types
+ * @property User user
+ * @property string status
+ */
+class ChatMember extends Type{
+    protected $validProps = ['user', 'status'];
+    protected $readOnly = ['user', 'status'];
+
+    protected $objectTypes = [
+        'user' => User::class
+    ];
+}

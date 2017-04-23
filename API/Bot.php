@@ -400,14 +400,13 @@ class Bot{
      * @param int|string $chat_id
      * @param string $action
      * @return bool
-     * @Todo: Test
      */
     public function sendChatAction($chat_id, $action)
     {
-        return $this->APICall('sendChatAction', [
+        return Types\Primitive::bool($this->APICall('sendChatAction', [
             'chat_id' => $chat_id,
             'action' => $action
-        ]);
+        ]));
     }
 
     /**
@@ -457,10 +456,10 @@ class Bot{
      */
     public function kickChatMember($chat_id, $user_id)
     {
-        return $this->APICall('kickChatMember', [
+        return Types\Primitive::bool($this->APICall('kickChatMember', [
             'chat_id' => $chat_id,
             'user_id' =>$user_id
-        ]);
+        ]));
     }
 
     /**
@@ -472,9 +471,9 @@ class Bot{
      */
     public function leaveChat($chat_id)
     {
-        return $this->APICall('leaveChat', [
+        return Types\Primitive::bool($this->APICall('leaveChat', [
             'chat_id' => $chat_id
-        ]);
+        ]));
     }
 
     /**
@@ -490,10 +489,10 @@ class Bot{
      */
     public function unbanChatMember($chat_id, $user_id)
     {
-        return $this->APICall('unbanChatMember', [
+        return Types\Primitive::bool($this->APICall('unbanChatMember', [
             'chat_id' => $chat_id,
             'user_id' =>$user_id
-        ]);
+        ]));
     }
 
     /**
@@ -533,13 +532,12 @@ class Bot{
     /**
      * Get the number of members in a chat
      *
-     * @param $chat_id String|Integer
-     * @return Integer
-     * @Todo: Test
+     * @param $chat_id String|int
+     * @return int
      */
     public function getChatMembersCount($chat_id)
     {
-        return $this->APICall("getChatMembersCount",["chat_id" => $chat_id]);
+        return Types\Primitive::int($this->APICall("getChatMembersCount",["chat_id" => $chat_id]));
     }
 
     /**
@@ -548,7 +546,6 @@ class Bot{
      * @param $chat_id String|Integer
      * @param $user_id Integer
      * @return Types\ChatMember
-     * @Todo: Test
      */
     public function getChatMember($chat_id, $user_id)
     {
