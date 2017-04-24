@@ -1,10 +1,14 @@
 <?php
 
-namespace MFRNA\TelegramBot\Types;
+namespace MFRNA\TelegramBot\Types\InlineQueryResult;
+
+use MFRNA\TelegramBot\Types\InlineQueryResult;
+use MFRNA\TelegramBot\Types\InlineKeyboardMarkup;
+use MFRNA\TelegramBot\Types\InputMessageContent;
 
 /**
  * Class InlineQueryResultPhoto
- * @package MFRNA\TelegramBot\Types
+ * @package MFRNA\TelegramBot\Types\InlineQueryResult
  * @property string type
  * @property string id
  * @property string photo_url

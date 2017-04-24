@@ -2,7 +2,7 @@
 
 namespace MFRNA\TelegramBot\Types;
 
-class InlineQueryResult extends Type
+abstract class InlineQueryResult extends Type
 {
 
 }

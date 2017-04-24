@@ -1,6 +1,8 @@
 <?php
 
-namespace MFRNA\TelegramBot\Types;
+namespace MFRNA\TelegramBot\Types\InputMessageContent;
+
+use MFRNA\TelegramBot\Types\InputMessageContent;
 
 /**
  * Class InputLocationMessageContent
