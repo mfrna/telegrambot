@@ -2,7 +2,9 @@
 
 namespace MFRNA\TelegramBot\Tests;
 
-class BotTest extends \PHPUnit_Framework_TestCase
+use \PHPUnit\Framework\TestCase;
+
+class BotTest extends TestCase
 {
     public function testBotClassCanBeInitialized()
     {
