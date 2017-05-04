@@ -15,10 +15,4 @@
             <directory>./tests/</directory>
         </testsuite>
     </testsuites>
-
-    <!-- filter>
-        <exclude>
-            <directory suffix=".php">./tests/</directory>
-        </exclude>
-    </filter -->
 </phpunit>

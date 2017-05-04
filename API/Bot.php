@@ -1,23 +1,18 @@
 <?php
 namespace MFRNA\TelegramBot\API;
 
-use MFRNA\TelegramBot\Exceptions\HttpException;
-use MFRNA\TelegramBot\Exceptions\APICallException;
-use MFRNA\TelegramBot\Exceptions\JSONException;
 use MFRNA\TelegramBot\Types;
 
 class Bot{
 
     protected $api_url = 'https://api.telegram.org/bot';
     protected $token;
-    private $file_upload = false;
-
-    const HTTP_CODE_OK = 200;
-
+    private $client;
 
     public function __construct($token)
     {
         $this->token = $token;
+        $this->client = new CURLClient($this->api_url,$token);
     }
 
     /**
@@ -30,55 +25,58 @@ class Bot{
      */
     public function setWebHook($url)
     {
-        return $this->APICall('setWebHook',['url' => $url]);
+        return $this->APICall('setWebHook', array('url' => $url));
     }
 
     /**
      * Main Gateway for API Communications
      * @param $method
      * @param array $params
-     * @throws APICallException
      * @return mixed
      */
-    protected function APICall($method, array $params = [])
+    protected function APICall($method, array $params = array())
     {
-        $options = array(
-            CURLOPT_URL => $this->api_url . $this->token. '/' . $method,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => null,
-            CURLOPT_POSTFIELDS => null
-        );
-
-        if (!empty($params)) {
-            $options[CURLOPT_POST] = true;
-            $options[CURLOPT_POSTFIELDS] = $params;
-        }
-
-        if($this->file_upload){
-            $options[CURLOPT_HTTPHEADER] = ["Content-Type:multipart/form-data"];
-        }
-
-        try{
-            $curlRes = curl_init();
-            curl_setopt_array($curlRes, $options);
-            $result = curl_exec($curlRes);
-
-            if(($httpCode = curl_getinfo($curlRes, CURLINFO_HTTP_CODE)) && $httpCode !== self::HTTP_CODE_OK) {
-                $result = json_decode($result);
-                throw new HttpException($result->description ,$httpCode);
-            }
-
-            $response = json_decode($result, true);
-            if(!$response) {
-                throw new JSONException("Empty JSON returned", 1);
-            }
-
-        } catch(\Exception $e) {
-            throw new APICallException($e->getMessage(), $e->getCode(), $e);
-        }
-
+        $response = $this->client->post($method, $params);
         return $response;
     }
+
+//  Guzzle Implementation
+//    protected function APICallGuzzle($method, array $params = array())
+//    {
+//        $client = new Client();
+//        foreach ($params as $k=>$v){
+//            $nparams[] = array(
+//                'name' => $k,
+//                'contents' => $v
+//            );
+//        }
+//        $params = array("multipart" => $nparams);
+//        try{
+//            $xfer = $client->post($this->api_url . $this->token. '/' . $method, $params);
+//            if($xfer->getStatusCode() !=200){
+//                throw new HttpException($xfer->getReasonPhrase() ,$xfer->getStatusCode());
+//            }
+//            $response = json_decode($xfer->getBody()->getContents(), true);
+//            if(!$response) {
+//                throw new JSONException("Empty JSON returned", 1);
+//            }
+//        }catch (\Exception $e) {
+//            throw new APICallException($e->getMessage(), $e->getCode(), $e);
+//        }
+//
+//        return $response;
+//    }
+
+//    protected function APICallPsr7($method, array $params = array())
+//    {
+//        $params = new \GuzzleHttp\Psr7\stream_for(http_build_query($params));
+//        $client = new \GuzzleHttp\Psr7\Request('POST',
+//            $this->api_url . $this->token. '/' . $method,array(),
+//            $params
+//            );
+//        var_dump($client->getBody()->getContents());exit;
+//
+//    }
 
     /**
     * A simple method for testing your bot's auth token.
@@ -107,16 +105,17 @@ class Bot{
         $disable_web_page_preview = null, $disable_notification = null,
         $reply_to_message_id = null, $reply_markup = null)
     {
-        return new Types\Message($this->APICall('sendMessage',[
-                'chat_id' => $chat_id,
-                'text' => $text,
-                'parse_mode' => $parse_mode,
-                'disable_web_page_preview' => $disable_web_page_preview,
-                'disable_notification' => $disable_notification,
-                'reply_to_message_id' => $reply_to_message_id,
-                'reply_markup' => (string)$reply_markup
-        ]));
+        return new Types\Message($this->APICall('sendMessage', array(
+            'chat_id' => $chat_id,
+            'text' => $text,
+            'parse_mode' => $parse_mode,
+            'disable_web_page_preview' => $disable_web_page_preview,
+            'disable_notification' => $disable_notification,
+            'reply_to_message_id' => $reply_to_message_id,
+            'reply_markup' => (string)$reply_markup
+        )));
     }
+
 
     /**
      * Forward messages of any kind. On success, the sent Message is returned
@@ -131,12 +130,12 @@ class Bot{
     public function forwardMessage($chat_id, $from_chat_id, $message_id,
         $disable_notification = null)
     {
-        return new Types\Message($this->APICall('forwardMessage', [
+        return new Types\Message($this->APICall('forwardMessage', array(
             'chat_id' => $chat_id,
             'from_chat_id' => $from_chat_id,
             'message_id' => $message_id,
             'disable_notification' => $disable_notification
-        ]));
+        )));
     }
 
     /**
@@ -153,14 +152,14 @@ class Bot{
     public function sendPhoto($chat_id, $photo, $caption = null,
         $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
     {
-        return new Types\Message($this->APICall('sendPhoto', [
+        return new Types\Message($this->APICall('sendPhoto', array(
             'chat_id' => $chat_id,
             'photo' => Types\InputFile::findFile($photo),
             'caption' => $caption,
             'disable_notification' => $disable_notification,
             'reply_to_message_id' => $reply_to_message_id,
             'reply_markup' => (string)$reply_markup
-        ]));
+        )));
     }
 
     /**
@@ -183,7 +182,7 @@ class Bot{
         $performer = null, $title = null, $disable_notification = null,
         $reply_to_message_id = null, $reply_markup = null)
     {
-        return new Types\Message($this->APICall('sendAudio', [
+        return new Types\Message($this->APICall('sendAudio', array(
             'chat_id' => $chat_id,
             'audio' => Types\InputFile::findFile($audio),
             'caption' => $caption,
@@ -193,7 +192,7 @@ class Bot{
             'disable_notification' => $disable_notification,
             'reply_to_message_id' => $reply_to_message_id,
             'reply_markup' => (string)$reply_markup
-        ]));
+        )));
     }
 
     /**
@@ -211,14 +210,14 @@ class Bot{
     public function sendDocument($chat_id, $document, $caption = null,
         $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
     {
-        return new Types\Message($this->APICall('sendDocument', [
+        return new Types\Message($this->APICall('sendDocument', array(
             'chat_id' => $chat_id,
             'document' => Types\InputFile::findFile($document),
             'caption' => $caption,
             'disable_notification' => $disable_notification,
             'reply_to_message_id' => $reply_to_message_id,
             'reply_markup' => (string)$reply_markup
-        ]));
+        )));
     }
 
     /**
@@ -236,14 +235,14 @@ class Bot{
     public function sendSticker($chat_id, $sticker, $caption = null,
         $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
     {
-        return new Types\Message($this->APICall('sendSticker', [
+        return new Types\Message($this->APICall('sendSticker', array(
             'chat_id' => $chat_id,
             'sticker' => Types\InputFile::findFile($sticker),
             'caption' => $caption,
             'disable_notification' => $disable_notification,
             'reply_to_message_id' => $reply_to_message_id,
             'reply_markup' => (string)$reply_markup
-        ]));
+        )));
     }
 
     /**
@@ -266,7 +265,7 @@ class Bot{
         $width = null, $height = null, $caption = null,
         $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
     {
-        return new Types\Message($this->APICall('sendVideo', [
+        return new Types\Message($this->APICall('sendVideo', array(
             'chat_id' => $chat_id,
             'video' => Types\InputFile::findFile($video),
             'duration' => $duration,
@@ -276,7 +275,7 @@ class Bot{
             'disable_notification' => $disable_notification,
             'reply_to_message_id' => $reply_to_message_id,
             'reply_markup' => (string)$reply_markup
-        ]));
+        )));
     }
 
     /**
@@ -297,7 +296,7 @@ class Bot{
     public function sendVoice($chat_id, $voice, $duration = null, $caption = null,
         $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
     {
-        return new Types\Message($this->APICall('sendVoice', [
+        return new Types\Message($this->APICall('sendVoice', array(
             'chat_id' => $chat_id,
             'voice' => Types\InputFile::findFile($voice),
             'duration' => $duration,
@@ -305,7 +304,7 @@ class Bot{
             'disable_notification' => $disable_notification,
             'reply_to_message_id' => $reply_to_message_id,
             'reply_markup' => (string)$reply_markup
-        ]));
+        )));
     }
 
     /**
@@ -323,14 +322,14 @@ class Bot{
     public function sendLocation($chat_id, $latitude, $longitude, $disable_notification = null,
         $reply_to_message_id = null, $reply_markup = null)
     {
-        return new Types\Message($this->APICall('sendLocation', [
+        return new Types\Message($this->APICall('sendLocation', array(
             'chat_id' => $chat_id,
             'latitude' => $latitude,
             'longitude' => $longitude,
             'disable_notification' => $disable_notification,
             'reply_to_message_id' => $reply_to_message_id,
             'reply_markup' => (string)$reply_markup
-        ]));
+        )));
     }
 
     /**
@@ -352,7 +351,7 @@ class Bot{
         $foursquare_id = null, $disable_notification = null,
         $reply_to_message_id = null, $reply_markup = null)
     {
-        return new Types\Message($this->APICall('sendVenue', [
+        return new Types\Message($this->APICall('sendVenue', array(
             'chat_id' => $chat_id,
             'latitude' => $latitude,
             'longitude' => $longitude,
@@ -362,7 +361,7 @@ class Bot{
             'disable_notification' => $disable_notification,
             'reply_to_message_id' => $reply_to_message_id,
             'reply_markup' => (string)$reply_markup
-        ]));
+        )));
     }
 
     /**
@@ -381,7 +380,7 @@ class Bot{
     public function sendContact($chat_id, $phone_number, $first_name, $last_name,
         $disable_notification = null, $reply_to_message_id = null, $reply_markup = null)
     {
-        return new Types\Message($this->APICall('sendContact', [
+        return new Types\Message($this->APICall('sendContact', array(
             'chat_id' => $chat_id,
             'phone_number' => $phone_number,
             'first_name' => $first_name,
@@ -389,7 +388,7 @@ class Bot{
             'disable_notification' => $disable_notification,
             'reply_to_message_id' => $reply_to_message_id,
             'reply_markup' => (string)$reply_markup
-        ]));
+        )));
     }
 
     /**
@@ -403,10 +402,10 @@ class Bot{
      */
     public function sendChatAction($chat_id, $action)
     {
-        return Types\Primitive::bool($this->APICall('sendChatAction', [
+        return Types\Primitive::bool($this->APICall('sendChatAction', array(
             'chat_id' => $chat_id,
             'action' => $action
-        ]));
+        )));
     }
 
     /**
@@ -419,11 +418,11 @@ class Bot{
      */
     public function getUserProfilePhotos($user_id, $offset = null, $limit = null)
     {
-        return new Types\UserProfilePhotos($this->APICall('getUserProfilePhotos', [
+        return new Types\UserProfilePhotos($this->APICall('getUserProfilePhotos', array(
             'user_id' => $user_id,
             'offset' => $offset,
             'limit' => $limit
-        ]));
+        )));
     }
 
     /**
@@ -440,9 +439,9 @@ class Bot{
      */
     public function getFile($file_id)
     {
-        return new Types\File($this>$this->APICall('getFile', [
+        return new Types\File($this->APICall('getFile', array(
                 'file_id' => $file_id
-            ]));
+            )));
     }
 
     /**
@@ -456,10 +455,10 @@ class Bot{
      */
     public function kickChatMember($chat_id, $user_id)
     {
-        return Types\Primitive::bool($this->APICall('kickChatMember', [
+        return Types\Primitive::bool($this->APICall('kickChatMember', array(
             'chat_id' => $chat_id,
             'user_id' =>$user_id
-        ]));
+        )));
     }
 
     /**
@@ -471,9 +470,9 @@ class Bot{
      */
     public function leaveChat($chat_id)
     {
-        return Types\Primitive::bool($this->APICall('leaveChat', [
+        return Types\Primitive::bool($this->APICall('leaveChat', array(
             'chat_id' => $chat_id
-        ]));
+        )));
     }
 
     /**
@@ -489,10 +488,10 @@ class Bot{
      */
     public function unbanChatMember($chat_id, $user_id)
     {
-        return Types\Primitive::bool($this->APICall('unbanChatMember', [
+        return Types\Primitive::bool($this->APICall('unbanChatMember', array(
             'chat_id' => $chat_id,
             'user_id' =>$user_id
-        ]));
+        )));
     }
 
     /**
@@ -500,12 +499,12 @@ class Bot{
      * current username of a user, group or channel, etc.)
      *
      * @param $chat_id String|Integer
-     * @return Chat
+     * @return Types\Chat
      * @Todo: Test
      */
     public function getChat($chat_id)
     {
-        return new Types\Chat($this->APICall('getChat', ['chat_id' => $chat_id]));
+        return new Types\Chat($this->APICall('getChat', array('chat_id' => $chat_id)));
     }
 
     /**
@@ -521,7 +520,7 @@ class Bot{
      */
     public function getChatAdministrators($chat_id)
     {
-        $adminsJson = $this->APICall('getChatAdministrators',['chat_id' => $chat_id]);
+        $adminsJson = $this->APICall('getChatAdministrators', array('chat_id' => $chat_id));
         $admins = array();
         foreach ($adminsJson['result'] as $admin) {
             $admins[] = new Types\User($admin);
@@ -537,7 +536,7 @@ class Bot{
      */
     public function getChatMembersCount($chat_id)
     {
-        return Types\Primitive::int($this->APICall("getChatMembersCount",["chat_id" => $chat_id]));
+        return Types\Primitive::int($this->APICall("getChatMembersCount", array("chat_id" => $chat_id)));
     }
 
     /**
@@ -549,10 +548,10 @@ class Bot{
      */
     public function getChatMember($chat_id, $user_id)
     {
-        return new Types\ChatMember($this->APICall('getChatMember',[
+        return new Types\ChatMember($this->APICall('getChatMember', array(
             'chat_id' => $chat_id,
             'user_id' => $user_id
-        ]));
+        )));
     }
 
     /**
@@ -575,13 +574,13 @@ class Bot{
     public function answerCallbackQuery($callback_query_id, $text = "", $show_alert = false,
         $url ="" , $cache_time = 0)
     {
-        return $this->APICall('answerCallbackQuery', [
+        return $this->APICall('answerCallbackQuery', array(
             'callback_query_id' => $callback_query_id,
             'text' => $text,
             'show_alert' => $show_alert,
             'url' => $url,
             'cache_time' => $cache_time
-        ]);
+        ));
     }
 
     /**
@@ -601,12 +600,12 @@ class Bot{
         $inline_message_id = null, $parse_mode = null,
         $disable_web_page_preview = null, $reply_markup = null)
     {
-        $params = [
+        $params = array(
             'text' => $text,
             'parse_mode' => $parse_mode,
             'disable_web_page_preview' => $disable_web_page_preview,
             'reply_markup' => $reply_markup
-        ];
+        );
         if(isset($inline_message_id)){
             $params['inline_message_id'] = $inline_message_id;
         }elseif(isset($chat_id) && isset($message_id)){
@@ -635,10 +634,10 @@ class Bot{
     public function editMessageCaption($caption, $chat_id = null, $message_id = null,
         $inline_message_id = null, $reply_markup = null)
     {
-        $params = [
+        $params = array(
             'caption' => $caption,
             'reply_markup' => $reply_markup
-        ];
+        );
         if(isset($inline_message_id)){
             $params['inline_message_id'] = $inline_message_id;
         }elseif(isset($chat_id) && isset($message_id)){
@@ -666,9 +665,9 @@ class Bot{
      */
     public function editMessageReplyMarkup($chat_id = null, $message_id = null, $inline_message_id = null, $reply_markup = null)
     {
-        $params = [
+        $params = array(
             'reply_markup' => $reply_markup
-        ];
+        );
         if(isset($inline_message_id)){
             $params['inline_message_id'] = $inline_message_id;
         }elseif(isset($chat_id) && isset($message_id)){
@@ -697,7 +696,7 @@ class Bot{
     public function answerInlineQuery($inline_query_id, $results, $cache_time = null, $is_personal = null, $next_offset = null,
         $switch_pm_text = null, $switch_pm_parameter = null)
     {
-        return $this->APICall('answerInlineQuery',[
+        return $this->APICall('answerInlineQuery', array(
             'inline_query_id' => $inline_query_id,
             'results' => $results,
             'cache_time' => $cache_time,
@@ -705,7 +704,7 @@ class Bot{
             'next_offset' => $next_offset,
             'switch_pm_text' => $switch_pm_text,
             'switch_pm_parameter' => $switch_pm_parameter
-        ]);
+        ));
     }
 
     /**
@@ -720,13 +719,13 @@ class Bot{
     public function sendGame($chat_id, $game_short_name, $disable_notification = null, $reply_to_message_id = null,
         $reply_markup = null)
     {
-        return new Types\Message($this->APICall('sendGame', [
+        return new Types\Message($this->APICall('sendGame', array(
             'chat_id' => $chat_id,
             'game_short_name' => $game_short_name,
             'disable_notification' => $disable_notification,
             'reply_to_message_id' => $reply_to_message_id,
             'reply_markup' => $reply_markup
-        ]));
+        )));
     }
 
     /**
@@ -747,12 +746,12 @@ class Bot{
     public function setGameScore($user_id, $score, $force = null, $disable_edit_message = null, $chat_id = null,
         $message_id = null, $inline_message_id = null)
     {
-        $params = [
+        $params = array(
             'user_id' => $user_id,
             'score' => $score,
             'force' => $force,
             'disable_edit_message' => $disable_edit_message
-        ];
+        );
 
         if(isset($inline_message_id)){
             $params['inline_message_id'] = $inline_message_id;
@@ -778,9 +777,9 @@ class Bot{
      */
     public function getGameHighScores($user_id, $chat_id = null, $message_id = null, $inline_message_id = null)
     {
-        $params = [
+        $params = array(
             'user_id' => $user_id
-        ];
+        );
         if(isset($inline_message_id)){
             $params['inline_message_id'] = $inline_message_id;
         }elseif(isset($chat_id) && isset($message_id)){
@@ -791,7 +790,7 @@ class Bot{
         }
         $scoresJSON = $this->APICall('getGameHighScores', $params);
 
-        $scores = [];
+        $scores = array();
 
         foreach ($scoresJSON['result'] as $score){
             $scores[] = new Types\GameHighScore($score);
