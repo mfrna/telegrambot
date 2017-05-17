@@ -6,13 +6,16 @@ use MFRNA\TelegramBot\Types;
 class Bot{
 
     protected $api_url = 'https://api.telegram.org/bot';
-    protected $token;
     private $client;
 
-    public function __construct($token)
+    public function __construct($token, Client $client = Null)
     {
-        $this->token = $token;
-        $this->client = new CURLClient($this->api_url,$token);
+        if(empty($client)){
+            $client = new CURLClient();
+        }
+        $this->client = $client;
+        $client->setApiUrl($this->api_url);
+        $client->setToken($token);
     }
 
     /**
@@ -39,44 +42,6 @@ class Bot{
         $response = $this->client->post($method, $params);
         return $response;
     }
-
-//  Guzzle Implementation
-//    protected function APICallGuzzle($method, array $params = array())
-//    {
-//        $client = new Client();
-//        foreach ($params as $k=>$v){
-//            $nparams[] = array(
-//                'name' => $k,
-//                'contents' => $v
-//            );
-//        }
-//        $params = array("multipart" => $nparams);
-//        try{
-//            $xfer = $client->post($this->api_url . $this->token. '/' . $method, $params);
-//            if($xfer->getStatusCode() !=200){
-//                throw new HttpException($xfer->getReasonPhrase() ,$xfer->getStatusCode());
-//            }
-//            $response = json_decode($xfer->getBody()->getContents(), true);
-//            if(!$response) {
-//                throw new JSONException("Empty JSON returned", 1);
-//            }
-//        }catch (\Exception $e) {
-//            throw new APICallException($e->getMessage(), $e->getCode(), $e);
-//        }
-//
-//        return $response;
-//    }
-
-//    protected function APICallPsr7($method, array $params = array())
-//    {
-//        $params = new \GuzzleHttp\Psr7\stream_for(http_build_query($params));
-//        $client = new \GuzzleHttp\Psr7\Request('POST',
-//            $this->api_url . $this->token. '/' . $method,array(),
-//            $params
-//            );
-//        var_dump($client->getBody()->getContents());exit;
-//
-//    }
 
     /**
     * A simple method for testing your bot's auth token.

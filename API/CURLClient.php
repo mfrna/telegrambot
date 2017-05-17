@@ -6,15 +6,12 @@ use MFRNA\TelegramBot\Exceptions\HttpException;
 use MFRNA\TelegramBot\Exceptions\APICallException;
 use MFRNA\TelegramBot\Exceptions\JSONException;
 
-class CURLClient
+class CURLClient implements Client
 {
     const HTTP_CODE_OK = 200;
+    private $api_url;
+    private $token;
 
-    public function __construct($url, $token)
-    {
-        $this->api_url = $url;
-        $this->token = $token;
-    }
     public function post($method, array $params = array())
     {
         $options = array(
@@ -53,5 +50,37 @@ class CURLClient
         }
 
         return $response;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getApiUrl()
+    {
+        return $this->api_url;
+    }
+
+    /**
+     * @param mixed $api_url
+     */
+    public function setApiUrl($api_url)
+    {
+        $this->api_url = $api_url;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param mixed $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
     }
 }
