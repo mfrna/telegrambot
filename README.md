@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/mfrna/telegrambot.svg?branch=master)](https://travis-ci.org/mfrna/telegrambot)
 # TelegramBot API
 A composer package for Telegram bots API
 
