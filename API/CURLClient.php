@@ -11,6 +11,7 @@ class CURLClient implements Client
     const HTTP_CODE_OK = 200;
     private $api_url;
     private $token;
+    private $file_upload;
 
     public function post($method, array $params = array())
     {
