@@ -762,4 +762,20 @@ class Bot{
         }
         return $scores;
     }
+
+    /**
+     * Use this method to generate a new invite link for a chat; any previously generated link is revoked.
+     * The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+     * Returns the new invite link as String on success.
+     * @param int|string $chat_id chat id or @channelUsername
+     * @return string
+     * @throws \BadMethodCallException
+     * @Todo: Test
+     */
+    public function exportChatInviteLink($chat_id)
+    {
+        return $this->APICall('exportChatInviteLink', array(
+            'chat_id' => $chat_id
+        ));
+    }
 }
