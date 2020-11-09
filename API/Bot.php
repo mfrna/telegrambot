@@ -774,8 +774,37 @@ class Bot{
      */
     public function exportChatInviteLink($chat_id)
     {
-        return $this->APICall('exportChatInviteLink', array(
+        return Types\Primitive::string($this->APICall('exportChatInviteLink', array(
             'chat_id' => $chat_id
-        ));
+        )));
+    }
+
+    /**
+     * Use this method to promote or demote a user in a supergroup or a channel.
+     * The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+     * Pass False for all boolean parameters to demote a user.
+     * Returns True on success.
+     * @param int|string $chat_id chat id or @channelUsername
+     * @return bool
+     * @throws \BadMethodCallException
+     * @Todo: Test
+     */
+    public function promoteChatMember($chat_id, $user_id, $is_anonymous = null, $can_change_info = null, $can_post_messages = null,
+                                      $can_edit_messages = null, $can_delete_messages = null, $can_invite_users = null, $can_restrict_members = null,
+                                      $can_pin_messages = null, $can_promote_members = null)
+    {
+        return Types\Primitive::bool($this->APICall('promoteChatMember', array(
+            'chat_id' => $chat_id,
+            'user_id' => $user_id,
+            'is_anonymous' => $is_anonymous,
+            'can_change_info' => $can_change_info,
+            'can_post_messages' => $can_post_messages,
+            'can_edit_messages' => $can_edit_messages,
+            'can_delete_messages' => $can_delete_messages,
+            'can_invite_users' => $can_invite_users,
+            'can_restrict_members' => $can_restrict_members,
+            'can_pin_messages' => $can_pin_messages,
+            'can_promote_members' => $can_promote_members
+        )));
     }
 }

@@ -13,4 +13,9 @@ class Primitive extends Type
     {
         return (int) $apiCallResult['result'];
     }
+
+    public static function string(array $apiCallResult)
+    {
+        return (string) $apiCallResult['result'];
+    }
 }
